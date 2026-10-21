@@ -1,90 +1,153 @@
-# Business Insights --- Amazon Products Sales Analysis
+# Business Insights --- Amazon Products Analysis
+
+## Executive Summary
+
+The Power BI dashboard summarizes the cumulative sum of the
+`Price(Dollar)` field, counts nonblank product-category records, and
+sums `Number of reviews` over the selected date context. These are the
+calculations implemented by the supplied DAX formulas; they should not
+automatically be interpreted as actual revenue, units sold, or new
+reviews received.
+
+In the all-category screenshot, the dashboard shows: - **YTD Sales
+measure:** approximately **\$2.18M** - **QTD Sales measure:**
+approximately **\$811.09K** - **YTD Products Sold measure:**
+approximately **27.75K** - **YTD Reviews measure:** approximately
+**19.42M**
+
+The category table total is **\$2,177,738** for the YTD sales measure.
+The findings below are based on the supplied dashboard screenshots and
+formulas, not on an independent re-analysis of every source row.
 
 ## Key Findings
 
-### 1. Sales measure is concentrated in two categories
+### 1. The displayed measure is concentrated in Men Shoes and Camera
 
-The dashboard reports total YTD sales of **\$2,177,738**. Men Shoes
-contributes **\$940,266 (43.18%)**, while Camera contributes **\$492,521
-(22.62%)**. Together, they represent approximately **65.8%** of the
-displayed total.
+  Product category         YTD sales measure         Share
+  ---------------------- ------------------- -------------
+  Men Shoes                        \$940,266        43.18%
+  Camera                           \$492,521        22.62%
+  Men Clothes                      \$357,644        16.42%
+  Car Accessories                  \$237,290        10.90%
+  Toys                             \$110,839         5.09%
+  Mobile & Accessories              \$39,178         1.80%
+  **Total**                  **\$2,177,738**   **100.00%**
 
-**Business implication:** These categories dominate the reported sales
-measure. Validate their performance and data coverage before
-prioritizing resources based on this result.
+Men Shoes and Camera together account for approximately **65.8%** of the
+displayed YTD measure. Men Shoes is the largest category in this view.
 
-### 2. Monthly performance is uneven
+**Business implication:** These categories dominate the current measure
+and are good candidates for deeper analysis. First verify that the
+measure is appropriate for commercial decisions: the DAX sums product
+prices, and the source fields shown do not establish transaction
+revenue.
 
-The all-category monthly chart shows lower values early in the year, a
-relatively steady middle period, a sharp rise in September, a decline in
-October, and high values again in November and December.
+### 2. Monthly values are uneven across the year
 
-**Business implication:** Annual totals may hide important monthly
-changes. Investigate the peak months using promotion, inventory,
-pricing, or marketing data if available.
+In the all-category annual view, the line chart shows lower values early
+in the year, a relatively steady period through the middle months, a
+sharp rise in September, a decline in October, and high values again in
+November and December.
 
-### 3. Weekly values fluctuate
+**Business implication:** Annual totals can hide meaningful changes over
+time. Investigate these periods using reliable promotion, inventory,
+pricing, or marketing data if available. The chart alone does not prove
+seasonality or explain the causes.
 
-The weekly chart shows noticeable week-to-week variation, including
-several high-value weeks later in the displayed period.
+### 3. Weekly values vary noticeably
 
-**Business implication:** Weekly monitoring may help identify periods
-that need investigation. Confirm the year and week-number logic before
-comparing weeks across years.
+The weekly column chart shows considerable week-to-week variation,
+including several higher-value weeks later in the displayed period.
 
-### 4. Top products depend on the selected measure
+**Business implication:** Weekly monitoring can help identify periods
+that deserve investigation. Since `WEEKNUM` is used, confirm the
+week-number convention and ensure weeks are not accidentally combined
+across different years.
 
-The top-five products by the dashboard's sales measure are not always
-the same as the top-five products by review count. Rankings also change
-with the selected quarter and category.
+### 4. Product rankings change with the metric and filters
 
-**Business implication:** Review volume should not be treated as a
-substitute for sales performance, star rating, or customer sentiment.
-Compare product-level metrics only after their definitions and time
-periods are aligned.
+The dashboard's top-five lists differ between the YTD sales measure and
+YTD review measure, and the displayed products change when quarter or
+category filters are selected.
 
-### 5. Filters support category-level investigation
+**Business implication:** A high review count does not necessarily mean
+a product has the highest sales measure, the best rating, or the most
+positive customer sentiment. Compare products using aligned time periods
+and verified metric definitions.
 
-Quarter and product-category filters change the KPI cards and charts,
-allowing users to explore the report at different levels.
+### 5. Category and quarter slicers support focused exploration
 
-**Business implication:** This is useful for investigating
-category-specific patterns. Validate that all visuals respond as
-intended and that totals and percentages use the expected filter
-context.
+The supplied screenshots show KPI cards and charts changing under
+different quarter and category selections.
 
-## Recommended Actions
+**Business implication:** These filters help users investigate specific
+slices of the data. Validate that all intended visuals respond correctly
+and that the reporting period remains clear to the reader.
 
-1.  **Validate the sales measure:** Confirm whether it represents
-    transaction revenue or a sum of listed product prices.
-2.  **Validate the products-sold KPI:** Confirm whether it counts units,
-    rows, or distinct products; rename it if necessary.
-3.  **Validate review calculations:** Determine whether review counts
-    are time-based or cumulative product-level totals.
-4.  **Check time logic:** Verify the reporting year, date relationship,
-    YTD/QTD calculations, and week-number convention.
-5.  **Improve readability:** Show the reporting year and make full
-    product names available in tooltips.
-6.  **Add evidence before making causal claims:** Use promotion,
-    inventory, cost, order, or sentiment data only if available and
-    reliable.
+## Measure Definitions and Important Interpretation
 
-## Important Limitations
+The following definitions come directly from the supplied DAX formulas:
 
--   Findings are based on dashboard screenshots, not an independent
-    recalculation of the workbook or DAX measures.
--   The displayed sales measure has not been verified as actual revenue.
--   The meaning of `YTD Products Sold` and `YTD Reviews` requires
-    confirmation.
--   Review count does not indicate whether reviews are positive or
-    negative.
--   Different screenshots show different filter states; their values
-    should not be combined as if they were separate periods.
+-   **YTD Sales:**
+    `TOTALYTD(SUM(Amazon_Data[Price(Dollar)]), 'Date Table'[Date])` ---
+    cumulative sum of the `Price(Dollar)` field in the year-to-date date
+    context. This is not proven transaction revenue.
+-   **QTD Sales:**
+    `TOTALQTD(SUM(Amazon_Data[Price(Dollar)]), 'Date Table'[Date])` ---
+    quarter-to-date sum of the same price field.
+-   **YTD Products Sold:**
+    `TOTALYTD(COUNT(Amazon_Data[Product Category]), 'Date Table'[Date])`
+    --- year-to-date count of nonblank `Product Category` values. Unless
+    each row is known to represent one unit sold, label this as a
+    record/category count rather than units sold.
+-   **YTD Reviews:**
+    `TOTALYTD(SUM(Amazon_Data[Number of reviews]), 'Date Table'[Date])`
+    --- year-to-date sum of the review-count field. If that field stores
+    cumulative product-level totals rather than dated review activity,
+    this calculation may not represent reviews received during the year
+    and may double-count repeated totals.
 
-## Summary
+The date table is generated from the minimum and maximum `Order Date`
+values and is related to `Amazon_Data`. Confirm that the relationship is
+active, the date column is suitable for time intelligence, and the date
+table is marked as a date table in Power BI.
 
-The clearest visible finding is that **Men Shoes and Camera account for
-approximately 65.8% of the dashboard's displayed YTD sales measure**.
-Monthly and weekly values also vary considerably. Before making business
-decisions, verify the measure definitions, date logic, and source-data
-meaning.
+## Recommendations
+
+1.  **Use accurate KPI labels.** Consider renaming "YTD Sales" to "YTD
+    Sum of Listed Prices" unless the dataset source confirms these rows
+    represent sales transactions and the sum is valid revenue.
+2.  **Rename or redefine "YTD Products Sold."** The current formula
+    counts nonblank category entries; use "YTD Records" unless each row
+    is confirmed to represent one sold unit.
+3.  **Validate the review metric.** Confirm whether `Number of reviews`
+    is a dated increment or a cumulative product attribute before
+    interpreting it as YTD review activity.
+4.  **Validate date logic.** Check YTD/QTD calculations, quarter
+    filtering, week numbering, and the reporting year.
+5.  **Improve product readability.** Show full product names in tooltips
+    and keep rankings sorted by the intended measure.
+6.  **Investigate patterns, don't assume causes.** Use additional
+    promotion, inventory, transaction, cost, or sentiment data before
+    making causal or profitability claims.
+
+## Limitations
+
+-   Findings are based on the supplied screenshots and DAX formulas, not
+    a fresh calculation over the full dataset.
+-   The visible dataset fields do not establish transaction revenue or
+    quantity sold.
+-   The current products-sold formula counts nonblank category values.
+-   Review counts do not indicate star ratings or positive/negative
+    sentiment.
+-   Different screenshots show different filter states and must not be
+    added together as separate periods.
+
+## Conclusion
+
+The dashboard's clearest visible finding is that Men Shoes and Camera
+account for approximately **65.8% of the displayed YTD sum-of-price
+measure**. Monthly and weekly values also vary noticeably. Before
+treating these patterns as commercial sales insights, validate the
+source data's grain and use labels that accurately describe what the DAX
+measures calculate.
