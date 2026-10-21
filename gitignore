@@ -1,0 +1,28 @@
+# OS and file-manager artifacts
+
+.DS_Store Thumbs.db Desktop.ini
+
+# Editor and IDE settings
+
+.vscode/ .idea/ *.swp *.swo \*\~
+
+# Temporary and log files
+
+*.tmp *.temp *.log *.bak \*.old
+
+# Python artifacts (if scripts are added later)
+
+**pycache**/ *.py\[cod\] .venv/ venv/ env/ .env .env.*
+
+# Jupyter checkpoints
+
+.ipynb_checkpoints/
+
+# Local Power BI / Office temporary or recovery files
+
+\~$*.pbix
+~$*.xlsx \~\$*.xlsm *.tmp *.autosave
+
+# Local machine-specific configuration
+
+\*.local
