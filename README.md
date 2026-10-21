@@ -1,185 +1,170 @@
-# Amazon Products Sales Analysis Dashboard
+# Amazon Products Analysis Dashboard
 
 ## Project Overview
 
-This project presents an interactive Power BI dashboard for exploring
-Amazon product data, sales-related measures, product categories, and
-product review counts. It was developed as a portfolio project to
-demonstrate dashboard design, data preparation, KPI reporting, and
-interactive data visualization using Microsoft Power BI.
+An interactive Power BI dashboard exploring product-category values,
+monthly and weekly patterns, and product rankings by price-sum and
+review-count measures. The project demonstrates Power BI reporting, DAX
+time-intelligence calculations, date-table creation, and interactive
+filtering.
 
-> **Data interpretation note:** The source workbook contains product
-> category, product description, price, number of reviews, shipment, and
-> order date fields. It does not visibly contain a dedicated
-> quantity-sold, order-ID, or transaction-revenue column. Therefore,
-> sales and products-sold measures must be validated against the actual
-> Power BI calculations and dataset meaning before being interpreted as
-> confirmed revenue or units sold.
+> **Metric note:** The supplied DAX formulas sum `Price(Dollar)` for
+> YTD/QTD "Sales," count nonblank `Product Category` values for "YTD
+> Products Sold," and sum `Number of reviews` for "YTD Reviews." The
+> source fields do not establish that these are transaction revenue,
+> units sold, or reviews newly received. Interpret the metrics
+> accordingly.
 
 ## Dashboard Preview
 
-![Amazon Products Sales Analysis
-Dashboard](images/amazon_sales_dashboard.png)
+![Amazon Products Analysis Dashboard](images/amazon_sales_dashboard.png)
 
-Open the Power BI report in
-`dashboard/amazon_sales_analysis_dashboard.pbix` to explore the report
-interactively. The PNG above is a static preview.
+Open `dashboard/amazon_sales_analysis_dashboard.pbix` in Power BI
+Desktop to explore the report.
 
-## Business Objective
+## Key Findings
 
-The objective is to summarize product performance over time and across
-product categories, highlight products with high sales-related values or
-review counts, and provide interactive filters to support exploratory
-analysis.
+-   **Category concentration:** Men Shoes contributes **43.18%** and
+    Camera **22.62%** of the displayed YTD sum-of-price measure.
+    Together, they account for approximately **65.8%**.
+-   **Uneven monthly pattern:** The all-category chart shows a marked
+    rise in September, a drop in October, and high values again in
+    November and December.
+-   **Weekly variation:** The weekly chart shows noticeable differences
+    between weeks; week-number logic should be validated across years.
+-   **Filterable analysis:** Quarter and product-category slicers let
+    users explore KPI cards, trends, and top-product rankings by
+    selected context.
 
-The dashboard is intended to help users investigate questions such as:
+See [`docs/business_insights.md`](docs/business_insights.md) for
+interpretation, recommendations, and limitations.
 
--   How do the selected sales measures change by month and week?
--   Which product categories contribute the largest share of the
-    selected sales measure?
--   Which products rank highest by the selected year-to-date sales
-    measure?
--   Which products have the largest year-to-date review counts?
--   How do the displayed metrics change when a quarter or product
-    category is selected?
-
-These questions are exploratory. Any business conclusion should be
-supported by verified measure definitions and the underlying data.
-
-## Dashboard Features
+## Dashboard Components
 
 ### KPI cards
 
--   **YTD Sales** --- year-to-date value calculated by the report's
-    sales measure.
--   **QTD Sales** --- quarter-to-date value calculated by the report's
-    sales measure.
--   **YTD Products Sold** --- the report's year-to-date product-count
-    measure; its definition should be checked to confirm whether it
-    represents units sold, rows, or another count.
--   **YTD Reviews** --- year-to-date review count based on the report's
-    measure.
+-   YTD Sales
+-   QTD Sales
+-   YTD Products Sold
+-   YTD Reviews
 
 ### Visualizations
 
--   **Sales by Month:** line chart for monthly trends.
--   **Sales by Week:** column chart for week-level variation.
--   **Sales by Product Category:** category-level comparison using a
-    formatted table.
--   **Top 5 Products by YTD Reviews:** bar chart ranking products by
-    review count.
--   **Top 5 Products by YTD Sales:** bar chart ranking products by the
-    report's sales measure.
+-   Sales by Month --- line chart
+-   Sales by Week --- column chart
+-   Sales by Product Category --- table with YTD, QTD, and share columns
+-   Top 5 Products by YTD Reviews --- bar chart
+-   Top 5 Products by YTD Sales --- bar chart
 
-### Interactivity
+### Filters
 
--   Quarter slicer.
--   Product category filter.
--   Cross-filtering and visual interactions, subject to verification in
-    the final PBIX report.
+-   Quarter slicer
+-   Product Category slicer
 
 ## Dataset
 
-The source workbook is stored at:
-
-`data/amazon_products_raw_data.xlsx`
-
-The workbook contains a worksheet named `Amazon_Data` with these fields:
+File: `data/amazon_products_raw_data.xlsx`\
+Worksheet: `Amazon_Data`
 
   -----------------------------------------------------------------------
-  Field                               Description
+  Column                              Description
   ----------------------------------- -----------------------------------
-  `Product Category`                  Product category associated with
-                                      the record.
+  `Product Category`                  Product category label
 
-  `Product Description`               Product description or product
-                                      name.
+  `Product Description`               Product description/name
 
-  `Price(Dollar)`                     Price value expressed in dollars in
-                                      the source data. Confirm its
-                                      meaning and data type before using
-                                      it as revenue.
+  `Price(Dollar)`                     Price-like numeric value; not
+                                      confirmed transaction revenue
 
-  `Number of reviews`                 Number of reviews recorded for the
-                                      product.
+  `Number of reviews`                 Review-count field; confirm whether
+                                      cumulative or period-specific
 
-  `Shipment`                          Shipment-related field; its precise
-                                      meaning should be documented from
-                                      the source.
+  `Shipment`                          Shipment-related field; meaning
+                                      should be confirmed from the source
 
   `Order Date`                        Date field used for time-based
-                                      analysis.
+                                      calculations
   -----------------------------------------------------------------------
 
-The workbook was reported to contain 89,082 data rows and dates spanning
-January 2019 through December 2022. Reconfirm these details if the
-workbook is refreshed or replaced.
+The workbook was observed to contain 89,082 rows. The date range and row
+count should be reconfirmed if the source workbook changes.
 
-### Data source and licensing
+**Dataset source and license:** Add the verified original dataset URL
+and check redistribution permission before uploading the workbook
+publicly. Do not imply the dataset is official Amazon transaction data
+unless the source confirms this.
 
-Document the original dataset URL, creator, and applicable license here
-before publishing:
+## Power BI Model and DAX
 
--   **Source:** Add the original dataset URL.
--   **License/permission:** Verify that redistribution of the dataset is
-    permitted.
+A date table is created from the minimum and maximum `Order Date`:
 
-Do not assume that a dataset is free to redistribute merely because it
-is publicly accessible.
+``` dax
+Date Table =
+CALENDAR (
+    MIN ( Amazon_Data[Order Date] ),
+    MAX ( Amazon_Data[Order Date] )
+)
+```
 
-## Tools and Techniques
+The report includes month, quarter, and week fields derived from the
+date. The date table is related to `Amazon_Data`.
 
--   **Microsoft Power BI** --- dashboard creation and interactive
-    reporting.
--   **Power Query** --- data import and preparation, where used.
--   **DAX** --- KPI and time-based calculations, where used.
--   **Microsoft Excel** --- source workbook inspection.
+Current measure definitions:
 
-Only list a tool or technique as used after confirming that it was part
-of the actual project workflow.
+``` dax
+QTD Sales =
+TOTALQTD (
+    SUM ( Amazon_Data[Price(Dollar)] ),
+    'Date Table'[Date]
+)
+```
 
-## Data Preparation and Validation
+``` dax
+YTD Products Sold =
+TOTALYTD (
+    COUNT ( Amazon_Data[Product Category] ),
+    'Date Table'[Date]
+)
+```
 
-Before final publication, review and document the following:
+``` dax
+YTD Reviews =
+TOTALYTD (
+    SUM ( Amazon_Data[Number of  reviews] ),
+    'Date Table'[Date]
+)
+```
 
-1.  Standardize text fields by trimming unnecessary leading and trailing
-    whitespace.
-2.  Inspect duplicate rows and determine whether they are genuine
-    duplicates or valid repeated observations before removing anything.
-3.  Validate data types, date values, missing values, and unusual price
-    values.
-4.  Confirm how `Price(Dollar)` is used in the sales measure.
-5.  Confirm whether the data represents product listings, orders, or
-    individual transactions.
-6.  Validate the definitions of YTD, QTD, products sold, and reviews.
-7.  Check that the quarter and category filters produce expected results
-    across all visuals.
+``` dax
+YTD Sales =
+TOTALYTD (
+    SUM ( Amazon_Data[Price(Dollar)] ),
+    'Date Table'[Date]
+)
+```
 
-See `docs/data_cleaning_notes.md` for the detailed validation log and
-`docs/kpi_definitions.md` for measure definitions.
+These are the formulas supplied for this project. The sales measures sum
+the price field, and the products-sold measure counts nonblank category
+values. Confirm the source data's grain before describing them as actual
+revenue or units sold. If review counts are cumulative product-level
+values, the YTD review calculation may not represent new reviews
+received during the year.
 
-## Key Findings and Business Recommendations
+## Tools
 
-Add findings here only after validating the calculations against the
-source data. For each finding, include the metric, time period, relevant
-category or product, and the business implication.
+-   Microsoft Power BI Desktop
+-   DAX
+-   Microsoft Excel
 
-Suggested structure:
-
--   **Finding:** State a verified pattern or comparison.
--   **Evidence:** Include the relevant value, period, and visual.
--   **Recommendation:** Suggest a practical action supported by the
-    evidence.
--   **Limitation:** Note any data-quality or interpretation constraint.
-
-Do not interpret review count as customer satisfaction or product
-rating; review volume alone does not indicate whether reviews are
-positive or negative.
+List Power Query as a project technique only if you used it for the
+actual data preparation.
 
 ## Repository Structure
 
 ``` text
 amazon-sales-analysis-powerbi/
+├── .gitignore
+├── README.md
 ├── data/
 │   ├── amazon_products_raw_data.xlsx
 │   └── data_dictionary.md
@@ -188,43 +173,27 @@ amazon-sales-analysis-powerbi/
 ├── docs/
 │   ├── problem_statement.md
 │   ├── kpi_definitions.md
-│   └── data_cleaning_notes.md
-├── images/
-│   ├── amazon_sales_dashboard.png
-│   ├── problem_statement_kpi_requirements.png
-│   └── problem_statement_chart_requirements.png
-└── README.md
+│   ├── data_cleaning_notes.md
+│   └── business_insights.md
+└── images/
+    └── amazon_sales_dashboard.png
 ```
 
-If the source data cannot be redistributed, replace the workbook in the
-public repository with a source link and instructions for obtaining it
-legally.
+## How to Open
 
-## How to Use
-
-1.  Download or clone this repository.
-2.  Open `dashboard/amazon_sales_analysis_dashboard.pbix` in Microsoft
-    Power BI Desktop.
-3.  If Power BI prompts for a data-source path, point it to
-    `data/amazon_products_raw_data.xlsx` and verify the query steps.
-4.  Refresh the report, then validate the KPI values and slicer
-    interactions.
-5.  Review the documentation in `docs/` before interpreting the metrics.
+1.  Clone or download this repository.
+2.  Open `dashboard/amazon_sales_analysis_dashboard.pbix` in Power BI
+    Desktop.
+3.  If prompted, reconnect the source to
+    `data/amazon_products_raw_data.xlsx`.
+4.  Refresh the report and test the quarter/category slicers.
 
 ## Limitations
 
--   The meaning of the sales measure must be verified; a sum of listed
-    prices is not necessarily sales revenue.
--   Product counts should not be described as units sold unless the data
-    supports that interpretation.
--   Review counts do not reveal review sentiment or product ratings.
--   Results depend on the source data, reporting-period logic, data
-    cleaning, and DAX definitions.
--   Dataset provenance and redistribution permission must be confirmed
-    before public sharing.
-
-## Project Status
-
-Portfolio project --- Power BI dashboard and supporting documentation
-are being reviewed and refined. Update this status once data validation
-and documentation are complete.
+-   The sales measure is a sum of prices, not verified transaction
+    revenue.
+-   The current products-sold measure counts nonblank category entries.
+-   Review-count semantics require source verification.
+-   Findings are descriptive and do not establish why monthly or weekly
+    values change.
+-   Confirm the dataset source and license before public redistribution.
