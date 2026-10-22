@@ -1,153 +1,131 @@
-# Business Insights --- Amazon Products Analysis
+# Business Insights — Amazon Products Sales Analysis
 
 ## Executive Summary
 
-The Power BI dashboard summarizes the cumulative sum of the
-`Price(Dollar)` field, counts nonblank product-category records, and
-sums `Number of reviews` over the selected date context. These are the
-calculations implemented by the supplied DAX formulas; they should not
-automatically be interpreted as actual revenue, units sold, or new
-reviews received.
+The dashboard explores product records across categories and dates, using the sum of `Price(Dollar)` as its sales-related measure and the sum of `Number of  reviews` as its review-related measure.
 
-In the all-category screenshot, the dashboard shows: - **YTD Sales
-measure:** approximately **\$2.18M** - **QTD Sales measure:**
-approximately **\$811.09K** - **YTD Products Sold measure:**
-approximately **27.75K** - **YTD Reviews measure:** approximately
-**19.42M**
+A fresh descriptive check of the uploaded `Amazon_Data` worksheet found **89,082 rows**, covering **January 3, 2019 to December 31, 2022**, with **8 product categories** and **67,942 distinct product descriptions**. Across the full workbook, the sum of `Price(Dollar)` is **$8,420,708**. The all-category dashboard screenshot shows **$2,177,738**, which matches the sum of the price field for **2022** in the workbook. This suggests the screenshot is displaying a 2022 reporting context; confirm the report's page filters and date logic in Power BI before treating that interpretation as definitive.
 
-The category table total is **\$2,177,738** for the YTD sales measure.
-The findings below are based on the supplied dashboard screenshots and
-formulas, not on an independent re-analysis of every source row.
+> **Interpretation warning:** The workbook does not contain a dedicated transaction/order ID, quantity-sold field, or confirmed transaction-revenue field. Consequently, this document calls `SUM(Price(Dollar))` the **price-sum measure** where accuracy matters. It should not be described as verified revenue unless the dataset's provenance and row-level meaning confirm that interpretation. Similarly, counting nonblank category entries measures records, not necessarily units sold.
 
 ## Key Findings
 
-### 1. The displayed measure is concentrated in Men Shoes and Camera
+### 1. The 2022 dashboard total is consistent with the source workbook
 
-  Product category         YTD sales measure         Share
-  ---------------------- ------------------- -------------
-  Men Shoes                        \$940,266        43.18%
-  Camera                           \$492,521        22.62%
-  Men Clothes                      \$357,644        16.42%
-  Car Accessories                  \$237,290        10.90%
-  Toys                             \$110,839         5.09%
-  Mobile & Accessories              \$39,178         1.80%
-  **Total**                  **\$2,177,738**   **100.00%**
+- **Evidence:** The all-category screenshot displays YTD Sales of approximately **$2.18M** and a category-table total of **$2,177,738**. The uploaded workbook's sum of `Price(Dollar)` for 2022 is also **$2,177,738**.
+- **Interpretation:** The displayed total is consistent with a 2022 sum of the price field.
+- **Business implication:** A year-specific reporting context makes the dashboard easier to interpret and compare. Make the reporting year visible in the report title, a year slicer, or a subtitle.
+- **Validation:** Confirm that the page/report filter is actually set to 2022 and that all visuals use the same date context. Do not rely on a matching total alone to prove the model's filter configuration.
 
-Men Shoes and Camera together account for approximately **65.8%** of the
-displayed YTD measure. Men Shoes is the largest category in this view.
+### 2. Camera and Men Shoes have the largest price sums across the full dataset
 
-**Business implication:** These categories dominate the current measure
-and are good candidates for deeper analysis. First verify that the
-measure is appropriate for commercial decisions: the DAX sums product
-prices, and the source fields shown do not establish transaction
-revenue.
+| Category | Sum of `Price(Dollar)` | Share of full-workbook sum |
+|---|---:|---:|
+| Camera | $2,476,922 | 29.41% |
+| Men Shoes | $2,232,016 | 26.51% |
+| Men Clothes | $1,168,165 | 13.87% |
+| Laptop | $1,086,045 | 12.90% |
+| Car Accessories | $628,656 | 7.47% |
+| Toys | $354,229 | 4.21% |
+| Mobile & Accessories | $333,042 | 3.96% |
+| Audio Video | $141,633 | 1.68% |
+| **Total** | **$8,420,708** | **100.00%** |
 
-### 2. Monthly values are uneven across the year
+- **Evidence:** These values are calculated directly from all 89,082 workbook rows, across 2019–2022. They are not the same as the screenshot's 2022-only category shares.
+- **Interpretation:** Camera and Men Shoes together account for approximately **55.9%** of the full-workbook price sum.
+- **Business implication:** These categories are useful priorities for deeper product-level investigation. Compare record counts, price distributions, and time trends before making inventory or marketing decisions.
+- **Caution:** A large price sum does not by itself prove high profit, high demand, or high sales volume.
 
-In the all-category annual view, the line chart shows lower values early
-in the year, a relatively steady period through the middle months, a
-sharp rise in September, a decline in October, and high values again in
-November and December.
+### 3. The price-sum measure varies substantially by year
 
-**Business implication:** Annual totals can hide meaningful changes over
-time. Investigate these periods using reliable promotion, inventory,
-pricing, or marketing data if available. The chart alone does not prove
-seasonality or explain the causes.
+| Order year | Sum of `Price(Dollar)` | Number of records |
+|---|---:|---:|
+| 2019 | $1,516,086 | 18,459 |
+| 2020 | $3,095,892 | 19,170 |
+| 2021 | $1,630,992 | 23,706 |
+| 2022 | $2,177,738 | 27,747 |
 
-### 3. Weekly values vary noticeably
+- **Evidence:** The annual sums and record counts were calculated from `Order Date` and `Price(Dollar)` in the uploaded workbook.
+- **Interpretation:** The price sum is highest in 2020, while 2022 has the highest record count. The two measures therefore do not move in lockstep.
+- **Business implication:** Track both record counts and price-related measures. A change in a summed price metric may reflect changes in the number of records, product mix, prices, or source-data structure.
+- **Caution:** These are descriptive comparisons, not evidence of revenue growth or decline. Confirm the dataset's meaning and completeness before using them as commercial performance indicators.
 
-The weekly column chart shows considerable week-to-week variation,
-including several higher-value weeks later in the displayed period.
+### 4. Category totals reflect different product-price profiles
 
-**Business implication:** Weekly monitoring can help identify periods
-that deserve investigation. Since `WEEKNUM` is used, confirm the
-week-number convention and ensure weeks are not accidentally combined
-across different years.
+- **Evidence:** Across the full workbook, Camera has a mean `Price(Dollar)` of about **$211.23** and a median of **$66**. Laptop has a mean of about **$1,000.96** and a median of **$784**, based on the supplied price field.
+- **Interpretation:** The Laptop category has a much higher typical listed-price level than most categories, while Camera's mean is notably above its median, suggesting a right-skewed price distribution or some high-price records.
+- **Business implication:** Use median, quartiles, and price-distribution charts alongside sums and averages. This can help identify whether category totals are influenced by a small number of expensive items.
+- **Caution:** Price distribution is not a profitability analysis; cost and margin data are not available in the workbook.
 
-### 4. Product rankings change with the metric and filters
+### 5. Review counts are concentrated in a few categories, but do not measure sentiment
 
-The dashboard's top-five lists differ between the YTD sales measure and
-YTD review measure, and the displayed products change when quarter or
-category filters are selected.
+- **Evidence:** The full-workbook sum of `Number of  reviews` is **58,540,289**. Men Clothes contributes **18,922,701** summed review counts, Men Shoes **11,001,863**, and Mobile & Accessories **9,835,939**.
+- **Interpretation:** These categories have the largest sums of the review-count field in the workbook. However, the field may represent a product-level cumulative count repeated across dated records.
+- **Business implication:** Use review counts as an engagement or popularity proxy only after confirming their semantics. For customer satisfaction, add verified star ratings, review sentiment, or review text.
+- **Caution:** A high review count does not establish positive sentiment, product quality, or customer satisfaction. Do not call this measure “new reviews during the year” unless the source field records review events by date.
 
-**Business implication:** A high review count does not necessarily mean
-a product has the highest sales measure, the best rating, or the most
-positive customer sentiment. Compare products using aligned time periods
-and verified metric definitions.
+### 6. Repeated product descriptions need careful interpretation
 
-### 5. Category and quarter slicers support focused exploration
+- **Evidence:** The workbook has **67,942 distinct product descriptions** across **89,082 rows**. Product descriptions repeat; the number of repeated description occurrences is not evidence of duplicate transactions by itself.
+- **Interpretation:** A description is not necessarily a unique product key, and repeated rows may represent repeated dated records or other source-specific observations.
+- **Business implication:** Before deduplicating or counting products, establish a stable product identifier and document what one row represents. Preserve valid repeated records.
+- **Caution:** Do not remove repeated descriptions or duplicate-looking rows without inspecting the source semantics.
 
-The supplied screenshots show KPI cards and charts changing under
-different quarter and category selections.
+### 7. The monthly screenshot shows visible spikes, but the cause is unknown
 
-**Business implication:** These filters help users investigate specific
-slices of the data. Validate that all intended visuals respond correctly
-and that the reporting period remains clear to the reader.
-
-## Measure Definitions and Important Interpretation
-
-The following definitions come directly from the supplied DAX formulas:
-
--   **YTD Sales:**
-    `TOTALYTD(SUM(Amazon_Data[Price(Dollar)]), 'Date Table'[Date])` ---
-    cumulative sum of the `Price(Dollar)` field in the year-to-date date
-    context. This is not proven transaction revenue.
--   **QTD Sales:**
-    `TOTALQTD(SUM(Amazon_Data[Price(Dollar)]), 'Date Table'[Date])` ---
-    quarter-to-date sum of the same price field.
--   **YTD Products Sold:**
-    `TOTALYTD(COUNT(Amazon_Data[Product Category]), 'Date Table'[Date])`
-    --- year-to-date count of nonblank `Product Category` values. Unless
-    each row is known to represent one unit sold, label this as a
-    record/category count rather than units sold.
--   **YTD Reviews:**
-    `TOTALYTD(SUM(Amazon_Data[Number of reviews]), 'Date Table'[Date])`
-    --- year-to-date sum of the review-count field. If that field stores
-    cumulative product-level totals rather than dated review activity,
-    this calculation may not represent reviews received during the year
-    and may double-count repeated totals.
-
-The date table is generated from the minimum and maximum `Order Date`
-values and is related to `Amazon_Data`. Confirm that the relationship is
-active, the date column is suitable for time intelligence, and the date
-table is marked as a date table in Power BI.
+- **Evidence:** In the supplied all-category dashboard screenshot, the monthly line rises sharply around September and remains high in November and December. The workbook's full-period monthly totals show high price sums in November and December 2020; these are different reporting contexts and should not be conflated.
+- **Interpretation:** The chart indicates month-to-month variation, but the screenshot alone cannot explain whether this is caused by seasonality, product mix, pricing, promotions, record volume, or filter context.
+- **Business implication:** Add a year selector and compare the same month across years. Include record counts alongside the price-sum measure to help separate volume effects from price/mix effects.
+- **Caution:** Do not attribute spikes to holiday shopping or promotions without supporting evidence.
 
 ## Recommendations
 
-1.  **Use accurate KPI labels.** Consider renaming "YTD Sales" to "YTD
-    Sum of Listed Prices" unless the dataset source confirms these rows
-    represent sales transactions and the sum is valid revenue.
-2.  **Rename or redefine "YTD Products Sold."** The current formula
-    counts nonblank category entries; use "YTD Records" unless each row
-    is confirmed to represent one sold unit.
-3.  **Validate the review metric.** Confirm whether `Number of reviews`
-    is a dated increment or a cumulative product attribute before
-    interpreting it as YTD review activity.
-4.  **Validate date logic.** Check YTD/QTD calculations, quarter
-    filtering, week numbering, and the reporting year.
-5.  **Improve product readability.** Show full product names in tooltips
-    and keep rankings sorted by the intended measure.
-6.  **Investigate patterns, don't assume causes.** Use additional
-    promotion, inventory, transaction, cost, or sentiment data before
-    making causal or profitability claims.
+### Priority 1 — Correct metric naming and definitions
 
-## Limitations
+1. **Rename “YTD Sales” and “QTD Sales”** to something like `YTD Price Sum` and `QTD Price Sum` unless the dataset owner confirms that summing `Price(Dollar)` represents transaction revenue.
+2. **Rename “YTD Products Sold”** to `YTD Records` unless each row is verified to represent one sold unit. The current measure counts nonblank `Product Category` values.
+3. **Validate “YTD Reviews.”** Determine whether `Number of  reviews` is a cumulative product-level count or a count of reviews created on each order date. If it is cumulative, summing it across rows and dates can overstate review activity.
+4. **Define the reporting year explicitly.** The all-category screenshot's $2,177,738 total matches the workbook's 2022 price sum. Display the selected year and verify the page-level filter, date relationship, and slicer interactions.
 
--   Findings are based on the supplied screenshots and DAX formulas, not
-    a fresh calculation over the full dataset.
--   The visible dataset fields do not establish transaction revenue or
-    quantity sold.
--   The current products-sold formula counts nonblank category values.
--   Review counts do not indicate star ratings or positive/negative
-    sentiment.
--   Different screenshots show different filter states and must not be
-    added together as separate periods.
+### Priority 2 — Improve time intelligence
 
-## Conclusion
+5. **Use a complete date table.** Mark `Date Table` as the model's date table and maintain an active one-to-many relationship from `Date Table[Date]` to `Amazon_Data[Order Date]`.
+6. **Sort month names by month number.** Set `Month Name` to sort by `Month Number` so visuals retain January–December order.
+7. **Avoid combining week numbers across years.** `WEEKNUM` repeats from year to year. Use a Year-Week label or a week-start date, and decide whether to use standard or ISO week numbering.
+8. **Test YTD/QTD calculations under filters.** Confirm that selecting Qtr 1–Qtr 4 returns the expected period and that QTD values reset at quarter boundaries. Check whether “YTD” means calendar-year-to-date or another business year.
 
-The dashboard's clearest visible finding is that Men Shoes and Camera
-account for approximately **65.8% of the displayed YTD sum-of-price
-measure**. Monthly and weekly values also vary noticeably. Before
-treating these patterns as commercial sales insights, validate the
-source data's grain and use labels that accurately describe what the DAX
-measures calculate.
+### Priority 3 — Improve the dashboard for decision-making
+
+9. **Show the reporting year and metric definitions** near the dashboard title or in a small information tooltip.
+10. **Add record count as a separate KPI or companion visual** so viewers can distinguish changes in the number of records from changes in the price sum.
+11. **Improve product-name readability.** Use full names in tooltips, provide a product-detail table, and ensure the top-five charts are sorted descending by the intended measure.
+12. **Use category-level drill-through.** Allow users to select a category and inspect its top products, price distribution, record count, and monthly pattern.
+13. **Use consistent units and precision.** Format dollar values consistently and avoid misleading precision when values are rounded to K/M.
+14. **Check visual filter interactions.** Confirm that quarter and category slicers affect every intended KPI and chart consistently.
+
+### Priority 4 — Strengthen data quality and business context
+
+15. **Investigate the 135 exact duplicate rows** found by a basic full-row duplicate check. Determine whether they are legitimate repeated observations before removing any.
+16. **Investigate 33 rows with a zero price value.** Confirm whether these represent valid free items, missing/placeholder values, or data errors. No negative price values were found in the basic numeric check.
+17. **Document the source and license.** Add the original dataset URL, creator, and redistribution terms before making the workbook public on GitHub.
+18. **Avoid causal or profitability claims.** To assess profit, demand, campaign impact, inventory performance, or customer satisfaction, obtain relevant cost, quantity/order, promotion, stock, rating, or sentiment fields.
+
+## Recommended Follow-up Analysis
+
+Once the source semantics are confirmed, useful next analyses include:
+
+- Year-over-year comparisons by category using the same reporting periods.
+- Monthly category trends with record counts and price-sum measures shown together.
+- Product price distributions by category (median and quartiles).
+- Top products by a verified sales or revenue metric, using a stable product identifier.
+- Review engagement and sentiment analysis, if review dates, ratings, or review text are available.
+- Profitability analysis, if cost and margin data become available.
+
+## Method and Limitations
+
+- **Source-derived evidence:** The dataset totals, dates, category summaries, and basic quality checks in this file were calculated from the uploaded `amazon_products_raw_data.xlsx`, worksheet `Amazon_Data`.
+- **Screenshot-derived evidence:** The displayed 2022 category table, dashboard KPI values, and visible monthly pattern were read from the supplied Power BI screenshots.
+- **Inference:** The match between the screenshot's $2,177,738 total and the workbook's 2022 price sum suggests a 2022 reporting context; it does not independently prove the report's filter setup.
+- The workbook does not establish whether each row represents a transaction, a product listing, a dated product observation, or another unit of analysis.
+- The price field is not confirmed transaction revenue, review totals may be cumulative, and no quantity-sold field is present.
+- Findings are descriptive and should not be used as causal claims or forecasts.
