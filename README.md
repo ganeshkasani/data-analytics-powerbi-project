@@ -1,60 +1,67 @@
-# Amazon Products Analysis Dashboard
+# Amazon Products Sales Analysis Dashboard
 
 ## Project Overview
 
-An interactive Power BI dashboard exploring product-category values,
-monthly and weekly patterns, and product rankings by price-sum and
-review-count measures. The project demonstrates Power BI reporting, DAX
-time-intelligence calculations, date-table creation, and interactive
-filtering.
+An interactive Power BI dashboard for exploring Amazon product records
+by date, category, product description, price-like values, and review
+counts. The project demonstrates Power BI dashboard design, DAX
+time-intelligence measures, a dedicated date table, data relationships,
+and slicer-driven analysis.
 
-> **Metric note:** The supplied DAX formulas sum `Price(Dollar)` for
-> YTD/QTD "Sales," count nonblank `Product Category` values for "YTD
-> Products Sold," and sum `Number of reviews` for "YTD Reviews." The
-> source fields do not establish that these are transaction revenue,
-> units sold, or reviews newly received. Interpret the metrics
-> accordingly.
+> **Important metric note:** The source workbook does not contain a
+> dedicated order ID, transaction revenue, or quantity-sold column. The
+> current measures sum `Price(Dollar)`, count nonblank
+> `Product Category` values, and sum `Number of  reviews`. Therefore,
+> the dashboard's "Sales" and "Products Sold" labels should not be
+> interpreted as confirmed revenue or units sold without additional
+> source evidence.
 
 ## Dashboard Preview
 
-![Amazon Products Analysis Dashboard](images/amazon_sales_dashboard.png)
+![Amazon Products Sales Analysis
+Dashboard](images/amazon_sales_dashboard.png)
 
 Open `dashboard/amazon_sales_analysis_dashboard.pbix` in Power BI
-Desktop to explore the report.
+Desktop to explore the report interactively.
 
-## Key Findings
+## Business Questions
 
--   **Category concentration:** Men Shoes contributes **43.18%** and
-    Camera **22.62%** of the displayed YTD sum-of-price measure.
-    Together, they account for approximately **65.8%**.
--   **Uneven monthly pattern:** The all-category chart shows a marked
-    rise in September, a drop in October, and high values again in
-    November and December.
--   **Weekly variation:** The weekly chart shows noticeable differences
-    between weeks; week-number logic should be validated across years.
--   **Filterable analysis:** Quarter and product-category slicers let
-    users explore KPI cards, trends, and top-product rankings by
-    selected context.
+-   How does the sum of the price field vary by month and week?
+-   Which product categories contribute the largest share of the
+    selected price-sum measure?
+-   Which product descriptions rank highest by the selected YTD
+    price-sum measure?
+-   Which product descriptions have the largest summed review counts?
+-   How do the displayed metrics change when quarter and
+    product-category filters are applied?
 
-See [`docs/business_insights.md`](docs/business_insights.md) for
-interpretation, recommendations, and limitations.
+These are exploratory questions. The results depend on the source data's
+meaning and the report's filter context.
 
 ## Dashboard Components
 
 ### KPI cards
 
--   YTD Sales
--   QTD Sales
--   YTD Products Sold
--   YTD Reviews
+-   **YTD Sales** --- currently calculated as a year-to-date sum of
+    `Price(Dollar)`.
+-   **QTD Sales** --- currently calculated as a quarter-to-date sum of
+    `Price(Dollar)`.
+-   **YTD Products Sold** --- currently calculated as a year-to-date
+    count of nonblank `Product Category` values.
+-   **YTD Reviews** --- currently calculated as a year-to-date sum of
+    `Number of  reviews`.
 
 ### Visualizations
 
--   Sales by Month --- line chart
--   Sales by Week --- column chart
--   Sales by Product Category --- table with YTD, QTD, and share columns
--   Top 5 Products by YTD Reviews --- bar chart
--   Top 5 Products by YTD Sales --- bar chart
+-   **Sales by Month:** line chart of the price-sum measure by month.
+-   **Sales by Week:** column chart of the price-sum measure by week
+    number.
+-   **Sales by Product Category:** category comparison table with
+    YTD/QTD measures and share of the displayed YTD total.
+-   **Top 5 Products by YTD Reviews:** product-description ranking by
+    the review-count measure.
+-   **Top 5 Products by YTD Sales:** product-description ranking by the
+    price-sum measure.
 
 ### Filters
 
@@ -63,40 +70,45 @@ interpretation, recommendations, and limitations.
 
 ## Dataset
 
-File: `data/amazon_products_raw_data.xlsx`\
-Worksheet: `Amazon_Data`
+**Workbook:** `data/amazon_products_raw_data.xlsx`\
+**Worksheet:** `Amazon_Data`
+
+The uploaded workbook contains **89,082 rows**, **6 columns**, and dates
+from **January 3, 2019 through December 31, 2022**. In the supplied
+workbook, the six columns have no blank values according to a basic null
+check; this does not replace broader data-quality validation.
 
   -----------------------------------------------------------------------
-  Column                              Description
+  Column                              Meaning / interpretation
   ----------------------------------- -----------------------------------
-  `Product Category`                  Product category label
+  `Product Category`                  Category label for the record
 
-  `Product Description`               Product description/name
+  `Product Description`               Product description/name; not
+                                      guaranteed to be a unique product
+                                      identifier
 
-  `Price(Dollar)`                     Price-like numeric value; not
-                                      confirmed transaction revenue
+  `Price(Dollar)`                     Price-like value in dollars; not
+                                      verified as transaction revenue
 
-  `Number of reviews`                 Review-count field; confirm whether
-                                      cumulative or period-specific
+  `Number of  reviews`                Review-count field; confirm whether
+                                      it is cumulative or period-specific
 
-  `Shipment`                          Shipment-related field; meaning
-                                      should be confirmed from the source
+  `Shipment`                          Shipment-related text field;
+                                      confirm the exact source meaning
 
-  `Order Date`                        Date field used for time-based
-                                      calculations
+  `Order Date`                        Date used for the report's
+                                      time-based calculations
   -----------------------------------------------------------------------
 
-The workbook was observed to contain 89,082 rows. The date range and row
-count should be reconfirmed if the source workbook changes.
-
-**Dataset source and license:** Add the verified original dataset URL
-and check redistribution permission before uploading the workbook
-publicly. Do not imply the dataset is official Amazon transaction data
-unless the source confirms this.
+**Source and license:** Add the verified original dataset URL and
+license before publishing. Public availability alone does not mean a
+dataset may be redistributed. Do not imply that this is official Amazon
+transaction data unless the source supports that claim.
 
 ## Power BI Model and DAX
 
-A date table is created from the minimum and maximum `Order Date`:
+A date table is created from the minimum and maximum `Order Date`
+values:
 
 ``` dax
 Date Table =
@@ -106,10 +118,11 @@ CALENDAR (
 )
 ```
 
-The report includes month, quarter, and week fields derived from the
-date. The date table is related to `Amazon_Data`.
+Additional date columns in the supplied model include month name, month
+number, quarter label, quarter number, and week number. The date table
+is related to `Amazon_Data`.
 
-Current measure definitions:
+Current measures supplied for the report:
 
 ``` dax
 QTD Sales =
@@ -143,21 +156,69 @@ TOTALYTD (
 )
 ```
 
-These are the formulas supplied for this project. The sales measures sum
-the price field, and the products-sold measure counts nonblank category
-values. Confirm the source data's grain before describing them as actual
-revenue or units sold. If review counts are cumulative product-level
-values, the YTD review calculation may not represent new reviews
-received during the year.
+The supplied date-column formulas are:
 
-## Tools
+``` dax
+Month Name = FORMAT ( 'Date Table'[Date], "MMM" )
+Month Number = MONTH ( 'Date Table'[Date] )
+Quarters Number = QUARTER ( 'Date Table'[Date] )
+Quarter = CONCATENATE ( "Qtr ", 'Date Table'[Quarters Number] )
+Week = WEEKNUM ( 'Date Table'[Date] )
+```
+
+### Measure interpretation and validation
+
+-   `YTD Sales` and `QTD Sales` are sums of the price field. Rename them
+    to reflect that calculation unless the dataset source confirms that
+    summing these rows produces valid sales revenue.
+-   `YTD Products Sold` counts nonblank category entries. Unless each
+    row represents one sold unit, consider a label such as `YTD Records`
+    or redefine the measure using a valid quantity/order field.
+-   `YTD Reviews` sums review counts by date. If each row contains a
+    cumulative product-level review total, this may not measure reviews
+    newly received during the year and could double-count totals.
+-   `WEEKNUM` returns week numbers that repeat each year. If the dataset
+    spans multiple years, week-only charts can combine different years
+    unless year is included in the grouping or a unique year-week field
+    is used.
+-   Confirm that the date relationship is active and that the date table
+    is marked as a date table before relying on time-intelligence
+    results.
+
+## Observations from the Dashboard
+
+In the supplied all-category screenshot, the displayed YTD price-sum
+measure is approximately **\$2.18M**. The category table shows:
+
+  Product category         Displayed YTD measure         Share
+  ---------------------- ----------------------- -------------
+  Men Shoes                            \$940,266        43.18%
+  Camera                               \$492,521        22.62%
+  Men Clothes                          \$357,644        16.42%
+  Car Accessories                      \$237,290        10.90%
+  Toys                                 \$110,839         5.09%
+  Mobile & Accessories                  \$39,178         1.80%
+  **Total**                      **\$2,177,738**   **100.00%**
+
+Men Shoes and Camera account for approximately **65.8%** of the
+displayed total. The monthly visual shows uneven values, with a visible
+rise around September and high values again near year-end. These are
+descriptive observations from the screenshot; they do not establish why
+the values changed.
+
+See [`docs/business_insights.md`](docs/business_insights.md) for
+findings, recommendations, and limitations.
+
+## Tools and Techniques
 
 -   Microsoft Power BI Desktop
 -   DAX
--   Microsoft Excel
+-   Date-table creation and relationship modeling
+-   Interactive slicers and visual interactions
+-   Microsoft Excel for source-data inspection
 
-List Power Query as a project technique only if you used it for the
-actual data preparation.
+List Power Query or other techniques only if they were actually used in
+this project.
 
 ## Repository Structure
 
@@ -181,19 +242,24 @@ amazon-sales-analysis-powerbi/
 
 ## How to Open
 
-1.  Clone or download this repository.
+1.  Clone or download the repository.
 2.  Open `dashboard/amazon_sales_analysis_dashboard.pbix` in Power BI
     Desktop.
 3.  If prompted, reconnect the source to
     `data/amazon_products_raw_data.xlsx`.
-4.  Refresh the report and test the quarter/category slicers.
+4.  Refresh the report and test the quarter and product-category
+    slicers.
+5.  Check the KPI definitions and limitations before interpreting the
+    displayed values.
 
 ## Limitations
 
 -   The sales measure is a sum of prices, not verified transaction
     revenue.
--   The current products-sold measure counts nonblank category entries.
--   Review-count semantics require source verification.
--   Findings are descriptive and do not establish why monthly or weekly
-    values change.
--   Confirm the dataset source and license before public redistribution.
+-   The products-sold measure counts nonblank category values, not
+    confirmed units.
+-   Review-count semantics need source verification.
+-   Week numbers can repeat across years.
+-   The dataset's source, provenance, and redistribution permissions
+    must be confirmed.
+-   Findings are descriptive and do not prove causes or future outcomes.
